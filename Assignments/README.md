@@ -4,4 +4,9 @@ This file is created to handle the Assignment of Course EE6407 Machine Learning 
 - __Assignment 1__
 ![A1](Report/Images/Assignment_1/A1_Intro.png)
     - [Data](Assignments/Assignment_1/Dataset)
-    - [Coding](Assignments/Assignment_1/Implement.ipynb)
+    - [Coding](Assignments/Assignment_1/Implement.ipynb). 
+
+- __Assignment 2__
+![A2](Report/Images/Assignment_2/A2_intro.png)
+    - [Data](Assignments/Assignment_2/Dataset)
+    - [Coding](Assignments/Assignment_2/Implement.ipynb)
