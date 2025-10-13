@@ -15,7 +15,7 @@
 \usepackage[utf8]{inputenc}  
 \usepackage{cite}  
 \usepackage{booktabs}
-
+\usepackage{indentfirst}
 \geometry{margin=1in}
 
 \begin{document}
@@ -41,15 +41,49 @@
 \newpage
 
 \section{Introduction}
-
+For the course EE6407, I implement two assignments, including the Naïve Bayes Classifier and the Fisher Linear Discriminate Classifier. This report summarizes the methods and results of these two assignments.
+I use Python as the programming language and Jupyter Notebook as the developement environment. The followings show the details of my design and implementation.
 \section{Assignment 1}
 \subsection{Handling Missing Values and Outliers}
 
 \subsubsection{Missing values}
-\textbf{\textit{Detection:}}\\
+\textbf{\textit{Detection:}}
+  
+For the missing value detection, I use the pandas library to check, with isna() function. This function would return a matrix reflects if the content in each position is empty or not. By summing the values in 
+each column, I can determine the number of times each feature's missing values occur \ref{fig:code_cell_missing}.\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/missing_check.png}
+    \caption{Missing Value Detection Code}
+    \label{fig:code_cell_missing}
+\end{figure}. 
+
+At first, there seems no missing values. however, after trying to transform datat type from dtype to float, there seems several data cannot successfully transformed, leading to new missing values. The missing value detection for training set consequence:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Feature&Missing Value Count\\
+        \hline
+        A&2\\
+        \hline
+        B&0\\
+        \hline
+        C&0\\
+        \hline
+        D&1\\
+        \hline
+        E&0\\
+        \hline
+    \end{tabular}
+\end{table}
 \textbf{\textit{Handling:}}
+
 \subsubsection{Outliers}
-\textbf{\textit{Detection:}}\\
+\textbf{\textit{Detection:}}
+  
+abcd
+  
 \textbf{\textit{Handling:}}
 
 \subsection{Design a Naïve Bayes classifier}
@@ -68,6 +102,11 @@
 \input{Images/Assignment_1/results_table.tex}
 
 \section{Assignment 2}
+\subsection{Fisher Linear Discriminate Classifier}
+\textbf{\textit{Establish:}}\\
 
+\textbf{\textit{Training:}}\\
+\subsection{Prediction and Analysis}
+\input{Images/Assignment_2/fisherlda_results.tex}
 \section{Conclusion}
 \end{document}
