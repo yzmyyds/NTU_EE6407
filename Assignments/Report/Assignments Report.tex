@@ -237,11 +237,14 @@ After the development of classifier, I trained the model with training dataset, 
 \section{Assignment 2}
 \subsection{Fisher Linear Discriminate Classifier}
 \subsubsection{Establishment of FLD}
-The Fisher LInear Discriminate (FLD) is a classifier to classify datasets which only have two classes. The main idea of FLD is to project the data into a line and maximize the distance between two classes while minimize the variance in each class. The following parts introduce the establishment roughly. Namely,
+The Fisher LInear Discriminate (FLD) is a classifier to classify datasets which only have two classes. The main idea of FLD is to project the data into a line and maximize the distance between two classes while minimize the variance in each class. Namely,
 we want to find a projection vector $\mathbf{w}$, which can maximize the following function:
 \begin{equation}
     J(\mathbf{w}) = \frac{\mathbf{w}^T \mathbf{S_B} \mathbf{w}}{\mathbf{w}^T \mathbf{S_W} \mathbf{w}}
 \end{equation}
+
+The following parts introduce the establishment roughly.\\
+
 
 (\textbf{i}) \textit{Get the label of two classes.}
 
@@ -253,25 +256,76 @@ For the unknown dataset, the first thing is to get the labels of two classes \re
     \label{fig:code_cell_get_classes}
 \end{figure}
 
-(\textbf{ii}) \textit{Find the distance between two classes.}
-
-The distance between two classes is the distance between the mean of each class. Therefore, I need to calculate the mean of each class first \ref{fig:code_cell_mean}, then calculate the distance \ref{fig:code_cell_distance}.
+(\textbf{ii}) \textit{Find the mean values of two classes data.}
 \begin{equation}
     \mathbf{m_k} = \frac{1}{N_k} \sum_{x \in C_k} \mathbf{x}
 \end{equation}
-\begin{equation}
-    \mathbf{d} = \mathbf{m_1} - \mathbf{m_2}
-\end{equation}
 
 (\textbf{iii}) \textit{Calculate the within-class scatter matrix.}
+\begin{equation}
+    \mathbf{S_k} = \sum_{x \in C_k} (\mathbf{x} - \mathbf{m_k})(\mathbf{x} - \mathbf{m_k})^T
+\end{equation}
+\begin{equation}
+    \mathbf{S_W} = \mathbf{S_1} + \mathbf{S_2}
+\end{equation}
+
+(\textbf{iv}) \textit{Calculate weight vector and bias.}
+\begin{equation}
+    \mathbf{w} = \mathbf{S_W}^{-1}(\mathbf{m_1} - \mathbf{m_2})
+\end{equation}
+\begin{equation}
+    b = -\frac{1}{2} \mathbf{w}^T (\mathbf{m_1} + \mathbf{m_2})
+\end{equation}
+
+(\textbf{v}) \textit{Get discriminate function.}
+
+\begin{equation}
+    g(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b
+\end{equation}
+
+While implement the FLD classifier with Python, I made some ajustments in real computation process. For example, I use the scipy.io library to read matlab file. In order to avoid the singular matrix of $S_w$, I added $\epsilon*I_w$ to origin $S_w$. The following figure is my coding realization of training part of FLD.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_2/fld_fit.png}
+    \caption{Training Code of FLD}
+    \label{fig:code_cell_fld_fit}
+\end{figure}
 \subsubsection{Training and Parameters}
 After setting up the FLD classifier, I trained the model with training dataset and got the weights vector $\mathbf{w}$ and bias $b$ with the function inside class code. The parameters are shown below.
 \input{Images/Assignment_2/parameter.tex}
+Therefore, the final discriminate function is:
+\begin{equation}
+    g(\mathbf{x}) = [-0.00178, -0.00347, -0.00194, -0.0.00168, -0.00266] \cdot \mathbf{x}^T + 0.087
+\end{equation}
 \subsection{Prediction and Analysis}
+With the discriminate function, it is easy to predict the label of test dataset.
+\begin{equation}
+\begin{aligned}
+    \text{If } g(\mathbf{x}) &> 0, \text{ then } \hat{y} = 1\\
+    \text{If } g(\mathbf{x}) &< 0, \text{ then } \hat{y} = -1
+\end{aligned}
+\end{equation}
+
+The prediction result is shown below.
 \input{Images/Assignment_2/fisherlda_results.tex}
 \section{Conclusion}
-
+In general, with these two assignment, I practice the implementation of two kinds of classifier: Gaussian Naive Bayes Classifier and Fisher Linear Discriminate Classifier. I also learn how to handle missing values and outliers in dataset, which is important for the performance of classifier.
+In addition, which kind of data cleaning method could be used should be determined by the dataset. Appropriate method for missing value and outlier can improve the performance of classifier.
 \newpage
 \bibliographystyle{ieeetr}
 \bibliography{references}
+
+\newpage
+\section{Appendix}
+\appendix
+\section{Gaussian Naive Bayes Implementation}
+The full Python implementation of Gaussian Naive Bayes Classifier is provided below.
+For the complete version, see my GitHub repository:
+\href{https://github.com/yzmyyds/NTU_EE6407/blob/main/Assignments/Assignment_1/Implement.ipynb}{GitHub link}.
+\section{Fisher LDA Implementation}
+
+The full Python implementation of Fisher Linear Discriminant Analysis is provided below. 
+For the complete version, see my GitHub repository: 
+\href{https://github.com/yzmyyds/NTU_EE6407/blob/main/Assignments/Assignment_2/Implement.ipynb}{GitHub link}.
+
 \end{document}
