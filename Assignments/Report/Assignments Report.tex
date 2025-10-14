@@ -58,7 +58,7 @@ each column, I can determine the number of times each feature's missing values o
     \label{fig:code_cell_missing}
 \end{figure}. 
 
-At first, there seems no missing values. however, after trying to transform datat type from dtype to float, there seems several data cannot successfully transformed, leading to new missing values. The missing value detection for training set consequence:
+At first, there seems no missing values. however, after trying to transform datat type from dtype to float, there seems several data cannot successfully transformed, leading to new missing values. The missing value detection for training set consequence \ref{tab:missing_value_count}:
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|}
@@ -76,10 +76,32 @@ At first, there seems no missing values. however, after trying to transform data
         E&0\\
         \hline
     \end{tabular}
+    \caption{Missing Value Count}
+    \label{tab:missing_value_count}
 \end{table}
 \textbf{\textit{Handling:}}
   
-After dectecting the missing values, there are 
+Since there are only several missing values in each feature, ig. two for feature A and one for feature D. I think that there are three methods could be used to replace the empty with practical values:
+\begin{itemize}
+    \item \textit{Missing Deletion:} 
+    
+    Simply delete all the feature at the position of missing value. This method is simple and effective, but may lead to data loss and bias of training classifier. In this condition, since the total number of missing values is 3, which is 2.5\% of the total data,
+    I think this method may be acceptable.
+    \item \textit{Single Imputation:} 
+    
+    Replace the missing value with a specific value, such as mean, median, or k nearest neighbors. This method avoid the data loss, and consider the distribution of data. However, when there are plenty of missing value, this method may replace these values with same data, leading to bias.
+    \item \textit{Imputation with Machine Learning:} 
+    
+    Use machine learning methods, regression, to predict the missing value. For example, use linear regression, decision tree regression, or least square regression to predict. Compared with single imputation, this method is more reliable. But it is more complex and time-consuming.
+\end{itemize}
+  
+In this assignment, I use the mean value of each feature to replace the missing values. Because the number of missing values is small, I think there is no need to use more complex methods, like machine learning. And this implementation is more practical than deletion \ref{fig:code_cell_fill}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/imputation_missing.png}
+    \caption{Imputation of Missing Values}
+    \label{fig:code_cell_fill}
+\end{figure}
 \subsubsection{Outliers}
 \textbf{\textit{Detection:}}
   
