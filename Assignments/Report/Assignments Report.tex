@@ -105,11 +105,119 @@ In this assignment, I use the mean value of each feature to replace the missing 
 \subsubsection{Outliers}
 \textbf{\textit{Detection:}}
   
-abcd
-  
+As for the outlier data, which means the data that is far away from the main distribution of dataset and may affect the performance of classifier. There are two mainstream methods to detect outliers, IQR and Z score. Because the dataset is small and may not follow Gaussian distribution. Therefore, I used 
+the IQR method to detect, which calculates the IQR value with the first and third quartile ($Q_1$,$Q_3$), regarding values that out of the range [$Q_1-1.5\times IQR$ , $Q_3+1.5 \times IQR$] as outliers.
+I used the following code \ref{fig:code_cell_IQR} to implement the number of outliers in each feature \ref{tab:outlier_count}. The training dataset has 5 outliers in total, while there is no outlier in test dataset.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/IQR.png}
+    \caption{IQR Method Realization}
+    \label{fig:code_cell_IQR}
+\end{figure} 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Feature&Outlier Count\\
+        \hline
+        A&1\\
+        \hline
+        B&2\\
+        \hline
+        C&1\\
+        \hline
+        D&1\\
+        \hline
+        E&0\\
+        \hline
+    \end{tabular}
+    \caption{Outlier Count}
+    \label{tab:outlier_count}
+\end{table}
+
+In order to show the context of outliers, I visualized the distribution of each feature with boxplot \ref{fig:boxplot}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/Boxplot_Train.png}
+    \caption{Boxplot of Training Set}
+    \label{fig:boxplot}
+\end{figure}
 \textbf{\textit{Handling:}}
 
-\subsection{Design a Naïve Bayes classifier}
+Similar to the missing value, I come up with three methods may be used to handle the outliers.
+\begin{itemize}
+    \item \textit{Outlier Removeal:}
+
+    This is the simplest and most direct method, just remove the outlier data with all features. This is effective, but may lead to data loss and training errors.
+    \item \textit{Imputation:}
+
+    Replace the outlier data with a specific value, such as mean and median. If there are many outliers, this method may lead to too many same values and affect the training of classifiers.
+    \item \textit{Capping Method:}
+
+    As mentioned before, the outliers are the values that out of IQR range. This method replace the too high value with the value of 95th percentile, and replace the too low value with the value of 
+    5th percentile. This method can meep the distribution, but may have same demerits as imputation with many outliers.
+\end{itemize}
+
+In this assignment, I use the capping method to handle the outliers \ref{fig:code_cell_capping}, and visualize the dataset with boxplot after cleaning \ref{fig:boxplot_clean}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/capping.png}
+    \caption{Capping Realization}
+    \label{fig:code_cell_capping}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/Assignment_1/Boxplot_Train_Capped.png}
+    \caption{Boxplot of Training Set After Cleaning}
+    \label{fig:boxplot_clean}
+\end{figure}
+
+\subsection{Design a Naïve Bayes Classifier}
+A Naïve Bayes Classifier is a simple classification model based on Bayes' Theorem with one important assumption: each feature is independent with each other (idd). I will introduce the establishment of classifier in the following parts.
+
+What we want to compute for prediction is $P(C_k|\mathbf{x})$. According to Bayes' Theorem,
+\begin{equation}
+P(C_k \mid \mathbf{x}) = \frac{P(\mathbf{x} \mid C_k) \, P(C_k)}{P(\mathbf{x})}
+\label{eq:bayes}
+\end{equation}
+
+The $\mathbf{x}$ has many features:[$x_1$, $x_2$, $x_3$, ..., $x_n$]. Since the assumption of idd, we can simplify the $P(\mathbf{x} \mid C_k)$:
+\begin{equation}
+P(\mathbf{x} \mid C_k) = P(x_1, x_2, x_3, ..., x_n \mid C_k) = \prod_{i=1}^{n} P(x_i \mid C_k)
+\label{eq:idd}
+\end{equation}
+
+Therefore,
+\begin{equation}
+P(C_k \mid \mathbf{x})=\frac{P(C_k)\,\prod_{i=1}^{n} P(x_i \mid C_k)}{P(\mathbf{x})}
+\end{equation}
+
+According to maximum a posterior (MAP) estimation,
+\begin{equation}
+\hat{C} = \arg\max_{C_k}\frac{P(C_k)\,\prod_{i=1}^{n} P(x_i \mid C_k)}{P(\mathbf{x})}
+\end{equation}
+
+For all classes, $P(\mathbf{x})$ is constant. Therefore, we can ignore it and use log function to avoid underflow:
+\begin{equation}
+\hat{C} = \arg\max_{C_k}\left(\ln P(C_k) + \sum_{i=1}^{n} \ln P(x_i \mid C_k)\right)
+\label{eq:discriminate}
+\end{equation}
+
+The (\ref{eq:discriminate}) shows the decision function (rule) of Naive Bayes Classifier. $P(C_k)$ could be estimate by the ratio of class $C_k$ in training set. 
+
+As for the $P(x_i \mid C_k)$, since the data is continuous and not binary, we can assume that they follow Gaussian distribution. With the Maximum Likelihood Estimation
+(MLE), we can estimate the mean and variance of each feature in each class. Therefore,
+\begin{equation}
+P(x_i \mid C_k) = \frac{1}{\sqrt{2\pi\sigma_{ik}^2}} \exp\left(-\frac{(x_i - \mu_{ik})^2}{2\sigma_{ik}^2}\right)
+\end{equation}
+\begin{equation}
+    \mu_{ik} = \frac{1}{N_k} \sum_{x \in C_k} x_i
+\end{equation}
+\begin{equation}
+    \sigma_{ik}^2 = \frac{1}{N_k} \sum_{x \in C_k} (x_i - \mu_{ik})^2
+\end{equation}
+
+With the above equations, I successfully establish a Gaussian Naive Bayes Classifier, the coding realization is shown \ref{fig:code_cell_1}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Images/Assignment_1/gnb_1.png}
@@ -121,14 +229,17 @@ abcd
     \caption{Code of Classifier Establishment}
     \label{fig:code_cell_1}
 \end{figure}
+
 \subsection{Prediction and Analysis}
+After the development of classifier, I trained the model with training dataset, A-D for features and E for label. Then I predict the test dataset labels. In addition, I tested the accuracy with training dataset and it seems pretty good. The consequences are shown below.
 \input{Images/Assignment_1/results_table.tex}
 
 \section{Assignment 2}
 \subsection{Fisher Linear Discriminate Classifier}
-\textbf{\textit{Establish:}}
+\subsubsection{Establishment of FLD}
 
-\textbf{\textit{Training:}}
+
+\subsubsection{Training and Disciminate Plane}
 
 \subsection{Prediction and Analysis}
 \input{Images/Assignment_2/fisherlda_results.tex}
